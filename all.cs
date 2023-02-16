@@ -12,6 +12,7 @@ class Program
             {0,0,0,0,0,0,0,0 },
             {0,1,0,0,0,0,0,1 },
             {0,0,0,0,0,0,0,0 },
+            {0,1,0,0,0,0,0,0 },
             {0,0,0,0,0,0,0,0 },
             };
 
@@ -32,7 +33,7 @@ class Program
     static int move(int i, int j, int[,] field, int killed) // считает по одной из диагоналей, но пока вопрос как запоминать их и сравнивать , как вариант два доп массива, где первый - результат похода шашки по каждому из путей, а вторая - направление в которое надо пойти.
     {
         Console.WriteLine(killed);
-        if (i < field.GetLength(0) - 2 && j > 1 && field[i + 1, j - 1] == 1) // черная справа снизу, остальные по аналогии , если справа - то j+1, если сверху, то i -1 !!!!!!!!!
+        if (i < field.GetLength(0) - 2 && j > 1 && field[i + 1, j - 1] == 1) // черная слева снизу
         {
             if (field[i + 2, j - 2] == 0)
             {
@@ -43,7 +44,40 @@ class Program
                 return move(i + 2, j - 2, field, killed=killed+1);
             }
         }
-     return killed;
+        else if (i > 1 && j > 1 && field[i - 1, j - 1] == 1) // черная слева сверху
+        {
+            if (field[i - 2, j - 2] == 0)
+            {
+                field[i - 1, j - 1] = 0;
+                field[i, j] = 0;
+                field[i - 2, j - 2] = 2;
+                output_field(field);
+                return move(i - 2, j - 2, field, killed = killed + 1);
+            }
+        }
+        else if (i > 1 && j < field.GetLength(1) - 2 && field[i - 1, j + 1] == 1) // черная справа сверху, остальные по аналогии 
+        {
+            if (field[i - 2, j +2] == 0)
+            {
+                field[i - 1, j + 1] = 0;
+                field[i, j] = 0;
+                field[i - 2, j + 2] = 2;
+                output_field(field);
+                return move(i - 2, j + 2, field, killed = killed + 1);
+            }
+        }
+        else if (i < field.GetLength(0) - 2 && j < field.GetLength(1) - 2 && field[i + 1, j + 1] == 1) // черная справа снизу
+        {
+            if (field[i + 2, j + 2] == 0)
+            {
+                field[i + 1, j + 1] = 0;
+                field[i, j] = 0;
+                field[i + 2, j + 2] = 2;
+                output_field(field);
+                return move(i + 2, j + 2, field, killed = killed + 1);
+            }
+        }
+        return killed;
             
         
 
@@ -69,9 +103,10 @@ class Program
     }
     public static void Main() 
     {
+        
         int m = int.Parse(Console.ReadLine());
         int n =     int.Parse(Console.ReadLine());
-        int [,]  field = new int[8, 8];
+        int [,]  field = new int[m, n];
         
         gen_field(out field, 1);
         find_white(out int i, out int j, field);
