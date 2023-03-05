@@ -1,115 +1,179 @@
-using System; // все работает только с положительными числами
+using System; // по какой то причине oX и oY перепутаны местами, в остальном работает
 class Program
 {
 
 
-    static void gen_field(out int[,] field, int num) //инициализация поля с наибольшим количеством граблей
+    static void gen_field(out char[,] field) 
     {
 
-        field = new int[,] {
-            {0,0,0,0,2,0,0,0 },
-            {0,0,0,1,0,1,0,0 },
-            {0,0,0,0,0,0,0,0 },
-            {0,1,0,1,0,0,0,1 },
-            {0,0,0,0,0,0,0,0 },
-            {0,1,0,0,0,1,0,0 },
-            {0,0,0,0,0,0,0,0 },
+        field = new char[,] {
+            {'0','0','0','1','1','0','0','1' },
+            {'0','1','0','0','0','0','0','0' },
+            {'0','1','0','0','0','1','0','0' },
+            {'0','1','0','1','0','1','0','0' },
+            {'0','1','0','0','0','1','0','0' },
+            {'0','1','0','1','0','1','0','0' },
+            {'0','0','0','0','0','0','0','0' },
             };
 
 
     }
-    static void output_field(int[,] field) // ничего лучше не придумал, хотя там надо поиграться с Unicode
+    static void output_field(char[,] field) 
     {
         for (int i = 0; i < field.GetLength(0); i++)
         {
             for (int j = 0; j < field.GetLength(1); j++)
             {
-                Console.Write(field[i,j]);  
+                Console.Write(field[i, j]);
             }
             Console.WriteLine();
         }
         Console.WriteLine("______________");
     }
-    static int move(int i, int j, int[,] field, int killed) // считает по одной из диагоналей, но пока вопрос как запоминать их и сравнивать , как вариант два доп массива, где первый - результат похода шашки по каждому из путей, а вторая - направление в которое надо пойти.
+    
+    static void move(char[,] field, int st_x, int st_y) 
     {
-        Console.WriteLine(killed);
-        if (i < field.GetLength(0) - 2 && j > 1 && field[i + 1, j - 1] == 1) // черная слева снизу, остальные по аналогии , если справа - то j+1, если сверху, то i -1 !!!!!!!!!
+
+
+        if (field[st_x, st_y] == '1')
         {
-            if (field[i + 2, j - 2] == 0)
-            {
-                field[i + 1, j - 1] = 0;
-                field[i, j] = 0;
-                field[i + 2, j - 2] = 2;
-                output_field(field);
-                return move(i + 2, j - 2, field, killed=killed+1);
-            }
-        }
-        else if (i > 1 && j > 1 && field[i - 1, j - 1] == 1) // черная слева сверху, остальные по аналогии , если справа - то j+1, если сверху, то i -1 !!!!!!!!!
-        {
-            if (field[i - 2, j - 2] == 0)
-            {
-                field[i - 1, j - 1] = 0;
-                field[i, j] = 0;
-                field[i - 2, j - 2] = 2;
-                output_field(field);
-                return move(i - 2, j - 2, field, killed = killed + 1);
-            }
-        }
-        else if (i > 1 && j < field.GetLength(1) - 2 && field[i - 1, j + 1] == 1) // черная справа сверху, остальные по аналогии , если справа - то j+1, если сверху, то i -1 !!!!!!!!!
-        {
-            if (field[i - 2, j +2] == 0)
-            {
-                field[i - 1, j + 1] = 0;
-                field[i, j] = 0;
-                field[i - 2, j + 2] = 2;
-                output_field(field);
-                return move(i - 2, j + 2, field, killed = killed + 1);
-            }
-        }
-        else if (i < field.GetLength(0) - 2 && j < field.GetLength(1) - 2 && field[i + 1, j + 1] == 1) // черная справа снизу, остальные по аналогии , если справа - то j+1, если сверху, то i -1 !!!!!!!!!
-        {
-            if (field[i + 2, j + 2] == 0)
-            {
-                field[i + 1, j + 1] = 0;
-                field[i, j] = 0;
-                field[i + 2, j + 2] = 2;
-                output_field(field);
-                return move(i + 2, j + 2, field, killed = killed + 1);
-            }
-        }
-        return killed;
+            field[st_x, st_y] = '*';
+            check_strike(f_down_bound_ship(field, st_x, st_y), f_up_bound_ship(field, st_x, st_y), f_lft_bound_ship(field, st_x, st_y), f_rght_bound_ship(field, st_x, st_y), field, st_x, st_y);
             
-        
+        }
+        else
+        {
+            field[st_x, st_y] = '*';
+        }
+
 
     }
-    static void find_white (out int i, out int j, int[,] field){ //функция поиска нашей белой шашки
-        i = -1;
-        j = -1;
-        for (int o = 0; o < field.GetLength(0); o++)
+    static int f_lft_bound_ship(char[,] field, int st_x, int st_y)
+    {
+        int res = st_x;
+        for (int i = st_x; i > 0; i--)
         {
-            for ( int e=0; e < field.GetLength(1); e++){
-                if (field[o, e] == 2)
+            if (field[i, st_y] == '0') return (i + 1);
+        }
+        return res;
+    }
+    static int f_rght_bound_ship(char[,] field, int st_x, int st_y)
+    {
+        int res = st_x;
+        for (int i = st_x; i < field.GetLength(0); i++)
+        { 
+            if (field[st_x, i] == '0')
+            {
+                return (i - 1);
+            }
+
+        }
+        return res;
+    }
+    static int f_up_bound_ship(char[,] field, int st_x, int st_y)
+    {
+        int res = st_y;
+        for (int i = st_y; i < field.GetLength(1); i++)
+        {
+            if (field[st_x, i] == '0') res = (i - 1);
+        }
+        return res;
+    }
+    static int f_down_bound_ship(char[,] field, int st_x, int st_y)
+    {
+        int res = -st_y;
+        for (int i = st_y; i >=0; i--)
+        {
+            if (field[st_x, i] == '0') res = (i + 1);
+        }
+        return res;
+    }
+    static void check_strike(int up, int down, int lft, int rght, char[,] field, int st_x, int st_y)
+    {
+        int counter_des_y = 0;
+        for (int i = down+1; i >= up; i--)
+        {
+            Console.WriteLine($"{st_x} {i} {field[st_x, i]}");
+            if (field[st_x, i] == '*')
+            {
+                
+                if (st_x > 0)
                 {
-                    i = o;
-                    j = e;
-                    break;
+                    field[st_x - 1, i] = '*';
                 }
+                if (st_x < field.GetLength(0))
+                {
+                    field[st_x + 1, i] = '*';
+                }
+                counter_des_y++;
             }
         }
+        if (counter_des_y == down -up - 1)
+        {
+            if (st_y > 0)
+            {
+                field[st_x, st_y-1] = '*';
+            }
+            if (st_y < field.GetLength(1))
+            {
+                field[st_x , st_y+1] = '*';
+            }
         }
-    static void game(char [,] field)
-    {
-     
+        int counter_des_x = 0;
+        for (int i = lft; i <= rght; i++)
+        {
+            if (field[i, st_y] == '*')
+            {
+                if (st_y > 0)
+                {
+                    field[i, st_y-1] = '*';
+                }
+                if (st_y < field.GetLength(0))
+                {
+                    field[i, st_y+1] = '*';
+                }
+                counter_des_x++;
+            }
+        }
+        if (counter_des_x == rght - lft - 1)
+        {
+            if (st_x > 0)
+            {
+                field[st_x-1, st_y ] = '*';
+            }
+            if (st_x < field.GetLength(0))
+            {
+                field[st_x+1, st_y ] = '*';
+            }
+        }
+        output_field(field);
     }
-    public static void Main() 
+    
+    static void game(char[,] field)
     {
-        
+        move(field, 1, 1);
+        move(field, 1, 2);
+        move(field, 1, 3);
+        move(field, 1, 4);
+        move(field, 1, 5);
+
+    }
+    public static void Main()
+    {
+
         int m = int.Parse(Console.ReadLine());
-        int n =     int.Parse(Console.ReadLine());
-        int [,]  field = new int[m, n];
-        
-        gen_field(out field, 1);
-        find_white(out int i, out int j, field);
-        Console.WriteLine(move(i, j, field, 0));
+        int n = int.Parse(Console.ReadLine());
+        char[,] field =  {
+            {'0','0','1','1','1','0','0','1' },
+            {'0','1','0','0','0','0','0','0' },
+            {'0','1','0','0','0','1','0','0' },
+            {'0','1','0','1','0','1','0','0' },
+            {'0','1','0','0','0','1','0','0' },
+            {'0','1','0','1','0','1','0','0' },
+            {'0','0','0','0','0','0','0','0' },
+            };
+
+        output_field(field);
+        game(field);
     }
 }
