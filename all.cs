@@ -1,9 +1,9 @@
-using System; // по какой то причине oX и oY перепутаны местами, в остальном работает
+using System; // вертикальные 
 class Program
 {
 
 
-    static void gen_field(out char[,] field) 
+    static void gen_field(out char[,] field)
     {
 
         field = new char[,] {
@@ -14,11 +14,12 @@ class Program
             {'0','1','0','0','0','1','0','0' },
             {'0','1','0','1','0','1','0','0' },
             {'0','0','0','0','0','0','0','0' },
+            {'0','0','0','1','1','0','0','1' },
             };
 
 
     }
-    static void output_field(char[,] field) 
+    static void output_field(char[,] field)
     {
         for (int i = 0; i < field.GetLength(0); i++)
         {
@@ -30,22 +31,22 @@ class Program
         }
         Console.WriteLine("______________");
     }
-    
-    static void move(char[,] field, int st_x, int st_y) 
+
+    static void move(char[,] field, int st_y, int st_x)
     {
 
 
         if (field[st_x, st_y] == '1')
         {
             field[st_x, st_y] = '*';
-            check_strike(f_down_bound_ship(field, st_x, st_y), f_up_bound_ship(field, st_x, st_y), f_lft_bound_ship(field, st_x, st_y), f_rght_bound_ship(field, st_x, st_y), field, st_x, st_y);
-            
+            check_strike(f_down_bound_ship(field, st_x, st_y), f_up_bound_ship(field, st_x, st_y), f_lft_bound_ship(field, st_x, st_y), f_rght_bound_ship(field, st_x, st_y), field, st_y, st_x);
+
         }
         else
         {
             field[st_x, st_y] = '*';
         }
-
+        output_field(field);
 
     }
     static int f_lft_bound_ship(char[,] field, int st_x, int st_y)
@@ -61,7 +62,7 @@ class Program
     {
         int res = st_x;
         for (int i = st_x; i < field.GetLength(0); i++)
-        { 
+        {
             if (field[st_x, i] == '0')
             {
                 return (i - 1);
@@ -82,7 +83,7 @@ class Program
     static int f_down_bound_ship(char[,] field, int st_x, int st_y)
     {
         int res = -st_y;
-        for (int i = st_y; i >=0; i--)
+        for (int i = st_y; i >= 0; i--)
         {
             if (field[st_x, i] == '0') res = (i + 1);
         }
@@ -90,72 +91,47 @@ class Program
     }
     static void check_strike(int up, int down, int lft, int rght, char[,] field, int st_x, int st_y)
     {
-        int counter_des_y = 0;
-        for (int i = down+1; i >= up; i--)
+        Console.WriteLine($"{up} {down} {rght} {lft}");
+        for (int i = down-1; i >= up; i--)
         {
-            Console.WriteLine($"{st_x} {i} {field[st_x, i]}");
-            if (field[st_x, i] == '*')
+            if (field[i, st_x] == '*')
             {
-                
-                if (st_x > 0)
+                if (i > 0)
                 {
-                    field[st_x - 1, i] = '*';
+
+                    field[i, st_x-1] = '*';
                 }
-                if (st_x < field.GetLength(0))
+                if (i < field.GetLength(0))
                 {
-                    field[st_x + 1, i] = '*';
+                    field[i, st_x+1] = '*';
                 }
-                counter_des_y++;
             }
         }
-        if (counter_des_y == down -up - 1)
-        {
-            if (st_y > 0)
-            {
-                field[st_x, st_y-1] = '*';
-            }
-            if (st_y < field.GetLength(1))
-            {
-                field[st_x , st_y+1] = '*';
-            }
-        }
-        int counter_des_x = 0;
+        Console.WriteLine($"{lft} {rght}");
         for (int i = lft; i <= rght; i++)
         {
-            if (field[i, st_y] == '*')
+            Console.WriteLine($"{field[st_y, i]} {st_y} {i}");
+            if (field[st_y,  i] == '*')
             {
-                if (st_y > 0)
+                if (i > 0)
                 {
-                    field[i, st_y-1] = '*';
+                    field[i, st_y - 1] = '*';
                 }
-                if (st_y < field.GetLength(0))
+                if (i < field.GetLength(0))
                 {
-                    field[i, st_y+1] = '*';
+                    field[i, st_y + 1] = '*';
                 }
-                counter_des_x++;
             }
         }
-        if (counter_des_x == rght - lft - 1)
-        {
-            if (st_x > 0)
-            {
-                field[st_x-1, st_y ] = '*';
-            }
-            if (st_x < field.GetLength(0))
-            {
-                field[st_x+1, st_y ] = '*';
-            }
-        }
-        output_field(field);
+        
     }
-    
+
     static void game(char[,] field)
     {
-        move(field, 1, 1);
-        move(field, 1, 2);
-        move(field, 1, 3);
-        move(field, 1, 4);
-        move(field, 1, 5);
+        move(field, 2, 0);
+        
+        move(field, 3, 0);
+        move(field, 4, 0);
 
     }
     public static void Main()
@@ -170,6 +146,7 @@ class Program
             {'0','1','0','1','0','1','0','0' },
             {'0','1','0','0','0','1','0','0' },
             {'0','1','0','1','0','1','0','0' },
+            {'0','0','0','0','0','0','0','0' },
             {'0','0','0','0','0','0','0','0' },
             };
 
