@@ -1,4 +1,4 @@
-using System;
+using System; // вертикальные 
 class Program
 {
 
@@ -111,43 +111,19 @@ class Program
     }
     static void check_strike(int up, int down, int lft, int rght, char[,] field, int st_x, int st_y)
     {
-        int counter_y = 0;
-         for (int i = down - 1; i >= up; i--)
-        {
-            if (field[i, st_x] == '*')
-            {
-                if (i > 0)
-                {
-					if ( field[i, st_x - 1]  != '1')
-                    field[i, st_x - 1] = '*';
-                }
-                if (i < field.GetLength(0))
-                {
-					if (field[i, st_x + 1] != '1')
-                    field[i, st_x + 1] = '*';
-                }
-                counter_y++;
-            }
-        }
-        if (counter_y == down - up - 1 && down - up > 1) Console.WriteLine($"ПОТОПЛЕН {counter_y}  ПАЛУБНЫЙ КОРАБЛЬ, ТАК ДЕРЖАТЬ ") ;
-        int counter_x = 0;
-        for (int i = lft-1; i <= rght; i++)
-        {
-            if (field[st_y, i] == '*')
-            {
-                if (st_y > 0)
-                {
-					
-                    field[st_y - 1, i] = '*';
-                }
-                if (st_y < field.GetLength(1))
-                {
-                    field[st_y + 1, i] = '*';
-                }
-                counter_x++;
-            }
-        }
-        if (counter_x == rght - lft  -1 && rght-lft > 1) Console.WriteLine($"ПОТОПЛЕН {counter_x}  ПАЛУБНЫЙ КОРАБЛЬ, ТАК ДЕРЖАТЬ! ");
+		if (st_y > 0)
+		{
+			if ( st_x> 0)
+			field[st_y-1, st_x - 1] = '*';
+			if (st_x < field.GetLength(1)) field[st_y-1, st_x+1] = '*';
+		}
+		if (st_y < field.GetLength(0))
+		{
+			if (st_x < field.GetLength(1))
+			field[st_y+1, st_x + 1] = '*';
+			if (st_x > 0) field[st_y+1, st_x-1] = '*';
+		}
+
     }
 
     static void game(char[,] field)
