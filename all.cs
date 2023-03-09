@@ -1,4 +1,4 @@
-using System; // вертикальные 
+using System;
 class Program
 {
 
@@ -41,7 +41,9 @@ class Program
         {
             for (int j = 0; j < field.GetLength(1); j++)
             {
+				if (field[i,j] == '*')
                 Console.Write(field[i, j]);
+                else Console.Write('-');
             }
             Console.WriteLine();
         }
@@ -109,7 +111,6 @@ class Program
     }
     static void check_strike(int up, int down, int lft, int rght, char[,] field, int st_x, int st_y)
     {
-        Console.WriteLine($"{up} {down}");
         int counter_y = 0;
          for (int i = down - 1; i >= up; i--)
         {
@@ -117,11 +118,12 @@ class Program
             {
                 if (i > 0)
                 {
-
+					if ( field[i, st_x - 1]  != '1')
                     field[i, st_x - 1] = '*';
                 }
                 if (i < field.GetLength(0))
                 {
+					if (field[i, st_x + 1] != '1')
                     field[i, st_x + 1] = '*';
                 }
                 counter_y++;
@@ -135,6 +137,7 @@ class Program
             {
                 if (st_y > 0)
                 {
+					
                     field[st_y - 1, i] = '*';
                 }
                 if (st_y < field.GetLength(1))
@@ -177,20 +180,17 @@ class Program
     public static void Main()
     {
 
-        int m = int.Parse(Console.ReadLine());
-        int n = int.Parse(Console.ReadLine());
-        char[,] field =  {
-            {'0','0','0','1','1','0','0','1' },
-            {'0','1','0','0','0','0','0','0' },
-            {'0','1','0','0','0','1','0','0' },
-            {'0','1','0','1','0','1','0','0' },
-            {'0','1','0','0','0','1','0','0' },
-            {'0','1','0','1','0','1','0','0' },
-            {'0','0','0','0','0','0','0','0' },
-            {'0','0','0','0','0','0','0','0' },
-            };
+		Console.WriteLine("Добро пожаловать в морской бой, капитан!");
+		Console.WriteLine("Сегодня предстоит жаркий бой , и чтобы вам было удобнее управлять эксадрой, я введу несколько обозначений, указанных на радаре" );
+		Console.WriteLine("Если вы видете знак '*' - значит удар по этим координатам уже наносился , и второй раз бить туда не следует, вы просто жгете снаряды");
+		Console.WriteLine("Если вы видете знак '-' - значит разведданых по этим координатам нет, стоит проверить их, вдруг там засел вражский линкор");
+		Console.WriteLine("Если вы видете знак 'X' - значит что удар по этим координатам уже был нанесен и вражеский корабль в огне!");
+
+        char[,] field;
+        gen_field(out field);
 
         output_field(field);
         game(field);
     }
 }
+
